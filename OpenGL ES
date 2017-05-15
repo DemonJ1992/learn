@@ -1,0 +1,61 @@
+##OpenGL ES
+@(Markdown)
+
+[toc]
+
+**OpenGL ES** (*OpenGL for Embedded Systems*) 是 *OpenGL* 三维图形 API 的子集，针对手机、PDA 和游戏主机等嵌入式设备而设计
+**OpenGL** (*Open Graphics Library*) 是定义了一个跨编程语言、跨平台和编程接口的规范，用于三维或二维图像。是功能强大，调用方便的底层图形库
+*OpenGL* 需要与 *Native* 视窗交互，因此需要一个中间控制层，与平台无关。**EGL** 因此被设计出来，作为 *OpenGL ES* 与视窗的桥梁
+
+###使用过程
+- 自定义图层类型
+	```EAGLLayer```
+- 初始化图层属性
+	```kEAGLDrawablePropertyRetainedBacking```是否保留图像重用
+	```kEAGLDrawablePropertyColorFormat```像素格式
+
+- 创建 *EAGLContext*
+	```context = [[EAGLContext alloc] initWithAPI: kEAGLRenderingAPIOpenGLES2];
+[EAGLContext setCurrentContext: context];
+```
+- 创建渲染缓冲区
+	```void glGenRenderbuffers(GLsizei n, GLuint * renderbuffers)```
+	为渲染缓存 *renderbuffer* 申请一个 *id*，参数 n 表示生成 *renderbuffer* 个数，参数 *renderbuffers* 返回分配给 *renderbuffer* 的 *id* （不为0）
+	
+	```void glBindRenderbuffer(GLenum target, GLuint renderbuffer)```
+	绑定renderbuffer到GL_RENDERBUFFER，参数 *target* 为GL_RENDERBUFFER，参数 *renderbuffer* 为```glGenRenderbuffers```生成的 *id*
+
+	```- (BOOL)renderbufferStorage:(NSUInteger)target fromDrawable:(id<EAGLDrawable>)drawable```
+	把渲染缓存 *renderbuffer* 绑定到图层 *CAEAGLLayer*，并为它分配共享内存，底层调用```glRenderbufferStroage```函数
+
+- 创建帧缓冲区
+	```void glFramebufferRenderbuffer(GLenum target, GLenum attachment, GLuint renderbuffer)```
+	将渲染缓存的内容填充到帧缓存，再由帧缓存渲染到屏幕
+
+- 创建着色器
+	```void glShaderSource(GLuint shader, GLsizei count, const GLchar *const string, const GLint *length)```
+	顶点着色器用来确定图形形状，片段着色器用来渲染图形颜色
+
+- 创建着色程序
+	```glCreateProgram()```
+	创建着色程序
+	
+	```glAttaxhShader()```
+	绑定着色器
+
+	```glBindAttribLocation()```
+	绑定着色器属性，根据角标获取
+
+	```glLinkProgram()```
+	链接程序
+
+	```glUseProgram()```
+	启动程序
+
+- 创建纹理对象
+- **YUV** 转 **RGB** 绘制纹理
+- 渲染缓冲区到屏幕
+- 清理内存
+	```glClearColor()```
+	```glClear()```
+	

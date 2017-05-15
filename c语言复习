@@ -1,0 +1,20 @@
+##c语言复习
+
+@(Markdown)
+
+``` cpp
+int a = 0;    
+int *a = 0;
+int (*a)[6];  // 数组指针
+int *a[6];  // 指针数组
+int (*func)(int param);  // 函数指针
+int *func(int param);  // 返回值为指针的函数
+int (*func[6])(int);  // 函数指针数组
+//int (*func)(int)[6];  // 函数数组指针
+```
+类似函数指针数组的可以通过typedef简化变量声明
+``` cpp
+typedef int(*calculate)(int, int);
+calculate arr[];
+```
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 

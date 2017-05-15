@@ -1,0 +1,33 @@
+##iOS 性能优化检测
+@(Markdown)
+
+CPU、GPU、内存都可以通过XCode真机调试或者instruments等开发工具监测
+instruments 的 Blended Layers、 Off-screen Rended 能够检测混合图层、离屏渲染
+CADisplayLink 可以监测屏幕显示帧数(CADisplayLink 会激活 runloop)
+``` objectivec
+- (void)createDisplayLink {
+	link = [CADisplayLink displayLinkWithTarget:self selector:@selector(linkMethod:)];
+	[link addToRunLoop:[NSRunLoop CurrentRunLoop] forMode:NSRunLoopCommonModes];
+}
+
+- (void)linkMethod:(CADisplayLink *)displayLink {
+	if (timeInterval != 0) {
+		CFTimeInterval interval = link.timestamp - timeInterval;
+		CGFloat fps = 1 / interval;
+		NSLog(@"current fps: %.1f", fps);
+	}
+	timeInterval = displayLink.timestamp;
+}
+```
+使用 CFRunLoopObserver 可以监测一次 runloop 消耗的时间，用于判断是否线程阻塞
+``` objectivec
+CFRunLoopObserverContext context = {0, (__bridge void*)self, NULL, NULL};
+CFRunLoopObserverRef observer = CFRunLoopObserverCreate(kCFAllocatorDefault, kCFRunLoopAllActivities, true, 0, &runLoopObserverCallback, &context);
+CFRunLoopAddObserver(CFRunLoopGetMain(), observer, kCFRunLoopCommonModes);
+//CFRunLoopRemoveObserver(CFRunLoopGetMain(), observer, kCFRunLoopCommonModes);
+```
+
+
+参考
+[微信读书 iOS 性能优化总结](https://detail.tmall.com/item.htm?spm=a220m.1000858.1000725.6.Fn8wNB&id=26673776639&areaId=431100&user_id=1611844916&cat_id=56602001&is_b=1&rn=e69352282594af35b5c42bdcaafd0382)
+[iOS实时卡顿监控](http://www.tanhao.me/code/151113.html/)
